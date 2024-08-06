@@ -17,7 +17,7 @@ class RedisClient {
         });
     }
 	isAlive() {
-        return this.client.connected;
+        return this.client.isOpen;
     }
 
     // Get value by key
@@ -33,7 +33,7 @@ class RedisClient {
     // Set value with expiration
     async set(key, value, duration) {
         try {
-            return await this.client.setex(key, duration, value);
+            return await this.client.set(key, value, 'EX', duration);
         } catch (err) {
             console.error('Set operation error:', err);
             throw err;
