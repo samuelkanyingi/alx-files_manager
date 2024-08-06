@@ -1,5 +1,6 @@
 const crypto = require('crypto');
 const dbClient = require('../utils/db');
+const { userQueue } = require('../utils/queue');
 
 class UsersController {
     static async postNew(req, res) {
@@ -31,6 +32,10 @@ class UsersController {
 
             // Respond with the new user's id and email
             const newUser = result.ops[0];
+	    const userId = newUser._id;
+
+            // Add a job to the userQueue for sending a welcome email
+            await userQueue.add({ userId });
             res.status(201).json({
                 id: newUser._id,
                 email: newUser.email
