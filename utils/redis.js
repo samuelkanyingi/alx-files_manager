@@ -2,22 +2,27 @@ const { createClient } = require('redis');
 
 class RedisClient {
     constructor() {
+        
         this.client = createClient();
+        this.isConnected = true;
 
         // Error handling
         this.client.on('error', (err) => {
             console.error('Redis Client Error:', err);
+            this.isConnected = false;
         });
 
         // Connect to Redis server
         this.client.connect().then(() => {
+            this.isConnected = true;
             //console.log("Redis client is connected to server");
         }).catch((err) => {
             console.error('Redis Connection Error:', err);
+            this.isConnected = false;
         });
     }
 	isAlive() {
-        return this.client.isOpen;
+        return this.isConnected;
     }
 
     // Get value by key
