@@ -14,7 +14,12 @@ class RedisClient {
 
         // Connect to Redis server
         this.client.connect().then(() => {
-            this.isConnected = true;
+            return this.client.ping().then(() =>{ 
+                this.isConnected = true;
+            }).catch((err) => {
+                console.error('Redis Ping Error:', err);
+                this.isConnected = false;
+            });
             //console.log("Redis client is connected to server");
         }).catch((err) => {
             console.error('Redis Connection Error:', err);
