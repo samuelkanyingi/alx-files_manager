@@ -49,6 +49,30 @@ class UsersController {
     }
     return null;
   }
+
+  static async getMe(req, res) {
+    try {
+      const userId = req.user._id; // req.user is set by authentication middleware
+
+      // Fetch user details from the database
+      const user = await dbClient.db.collection('users').findOne({ _id: userId });
+
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      // Respond with user details (excluding password)
+      res.status(200).json({
+        id: user._id,
+        email: user.email,
+        // Add other user details if needed
+      });
+    } catch (err) {
+      console.error('Error fetching user details:', err);
+      return res.status(500).json({ error: 'Internal Server Error' });
+    }
+    return null;
+  }
 }
 
 module.exports = UsersController;
