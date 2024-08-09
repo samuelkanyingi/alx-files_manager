@@ -1,6 +1,7 @@
 const crypto = require('crypto');
 const dbClient = require('../utils/db');
 const { userQueue } = require('../utils/queue');
+const redisClient = require('../utils/redis');
 
 class UsersController {
   static async postNew(req, res) {
@@ -52,20 +53,26 @@ class UsersController {
 
   static async getMe(req, res) {
     try {
-      const userId = req.user._id; // req.user is set by authentication middleware
+      const token = req.get('X-Token');
+      if (!token) {
+        return res.status(401).json({ error: 'Unauthorized' });
+      }
+      // const userId = req.user._id; // req.user is set by authentication middleware
+      // console.log(userId)
+      // Fetch user details from the database
+      // const user = await dbClient.db.collection('users').findOne({ _id: userId });
+      const userId = await redisClient.get(`auth_${token}`);
+      if (!userId) {
+        return res.status(401).json({ error: 'Unauthorized' });
+      }
 
       // Fetch user details from the database
       const user = await dbClient.db.collection('users').findOne({ _id: userId });
 
-      if (!user) {
-        return res.status(404).json({ error: 'User not found' });
-      }
-
       // Respond with user details (excluding password)
       res.status(200).json({
-        id: user._id,
+        id: user.id,
         email: user.email,
-        // Add other user details if needed
       });
     } catch (err) {
       console.error('Error fetching user details:', err);
