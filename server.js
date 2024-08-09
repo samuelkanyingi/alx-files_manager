@@ -1,9 +1,12 @@
-const express = require('express');
+// const express = require('express');
+import express from 'express';
+import routes from './routes/index.js';
+
 const app = express();
 const port = process.env.PORT || 5000;
 
 // Load routes from routes/index.js
-const routes = require('./routes/index');
+// const routes = require('./routes/index');
 app.use('/', routes);
 
 // Start the server
