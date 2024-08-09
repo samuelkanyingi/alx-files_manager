@@ -1,5 +1,6 @@
 // const express = require('express');
 import express from 'express';
+
 import routes from './routes/index';
 // const router = require('./routes/index');
 
@@ -8,6 +9,7 @@ const port = process.env.PORT || 5000;
 
 // Load routes from routes/index.js
 // const routes = require('./routes/index');
+app.use(express.json());
 app.use('/', routes);
 
 // Start the server
